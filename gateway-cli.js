@@ -15,7 +15,7 @@ const { ethers } = require('ethers')
 const MyRinkebyTokenJSON = require('./src/contracts/MyRinkebyToken.json')
 const KudosRinkebyTokenJSON = require('./src/contracts/KudosRinkebyToken.json')
 const MyTokenJSON = require('./src/contracts/MyToken.json')
-const KudosToken = require('./src/contracts/KudosToken.json')
+const KudosTokenJSON = require('./src/contracts/KudosToken.json')
 
 const TransferGateway = Contracts.TransferGateway
 const AddressMapper = Contracts.AddressMapper
