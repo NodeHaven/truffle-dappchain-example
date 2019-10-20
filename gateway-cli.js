@@ -13,9 +13,9 @@ const BN = require('bn.js')
 const { ethers } = require('ethers')
 
 const MyRinkebyTokenJSON = require('./src/contracts/MyRinkebyToken.json')
-const MyRinkebyCoinJSON = require('./src/contracts/MyRinkebyCoin.json')
+const KudosRinkebyTokenJSON = require('./src/contracts/KudosRinkebyToken.json')
 const MyTokenJSON = require('./src/contracts/MyToken.json')
-const MyCoinJSON = require('./src/contracts/MyCoin.json')
+const KudosToken = require('./src/contracts/KudosToken.json')
 
 const TransferGateway = Contracts.TransferGateway
 const AddressMapper = Contracts.AddressMapper
@@ -32,14 +32,14 @@ const coinMultiplier = new BN(10).pow(new BN(18))
 async function getRinkebyCoinContract(web3js) {
   const networkId = await web3js.eth.net.getId()
   return new web3js.eth.Contract(
-    MyRinkebyCoinJSON.abi,
-    MyRinkebyCoinJSON.networks[networkId].address
+    KudosRinkebyTokenJSON.abi,
+    KudosRinkebyTokenJSON.networks[networkId].address
   )
 }
 
 async function getRinkebyCoinContractAddress(web3js) {
   const networkId = await web3js.eth.net.getId()
-  return MyRinkebyCoinJSON.networks[networkId].address
+  return KudosRinkebyTokenJSON.networks[networkId].address
 }
 
 async function getRinkebyCoinBalance(web3js, accountAddress) {
@@ -180,8 +180,8 @@ async function depositTokenToGateway(web3js, tokenId, ownerAccount, gas) {
 async function getExtdevCoinContract(web3js) {
   const networkId = await web3js.eth.net.getId()
   return new web3js.eth.Contract(
-    MyCoinJSON.abi,
-    MyCoinJSON.networks[networkId].address,
+    KudosTokenJSON.abi,
+    KudosTokenJSON.networks[networkId].address,
   )
 }
 
@@ -552,8 +552,8 @@ program
         amount: actualAmount,
         ownerExtdevAddress: extdev.account,
         ownerRinkebyAddress: rinkeby.account.address,
-        tokenExtdevAddress: MyCoinJSON.networks[extdevNetworkId].address,
-        tokenRinkebyAddress: MyRinkebyCoinJSON.networks[rinkebyNetworkId].address,
+        tokenExtdevAddress: KudosTokenJSON.networks[extdevNetworkId].address,
+        tokenRinkebyAddress: KudosRinkebyTokenJSON.networks[rinkebyNetworkId].address,
         timeout: options.timeout ? (options.timeout * 1000) : 120000
       })
       const txHash = await withdrawCoinFromRinkebyGateway({
@@ -672,12 +672,12 @@ program
       client = extdev.client
 
       const networkId = await rinkeby.web3js.eth.net.getId()
-      const myRinkebyCoinAddress = Address.fromString(`eth:${MyRinkebyCoinJSON.networks[networkId].address}`)
+      const KudosRinkebyTokenAddress = Address.fromString(`eth:${KudosRinkebyTokenJSON.networks[networkId].address}`)
       const myRinkebyTokenAddress = Address.fromString(`eth:${MyRinkebyTokenJSON.networks[networkId].address}`)
       const myRinkebyGatewayAddress = Address.fromString(`eth:${rinkebyGatewayAddress}`)
       const receipt = await getPendingWithdrawalReceipt(extdev.client, extdev.account)
 
-      if (receipt.tokenContract.toString() === myRinkebyCoinAddress.toString()) {
+      if (receipt.tokenContract.toString() === kudosRinkebyTokenAddress.toString()) {
         console.log(`Found pending withdrawal of ${receipt.tokenAmount.div(coinMultiplier).toString()} coins.`)
         const txHash = await withdrawCoinFromRinkebyGateway({
           web3js: rinkeby.web3js,
@@ -875,9 +875,9 @@ program
 
       let tokenRinkebyAddress, tokenExtdevAddress, rinkebyTxHash
       if (contractType === 'coin') {
-        tokenRinkebyAddress = MyRinkebyCoinJSON.networks[rinkebyNetworkId].address
-        rinkebyTxHash = MyRinkebyCoinJSON.networks[rinkebyNetworkId].transactionHash
-        tokenExtdevAddress = MyCoinJSON.networks[extdevNetworkId].address
+        tokenRinkebyAddress = KudosRinkebyTokenJSON.networks[rinkebyNetworkId].address
+        rinkebyTxHash = KudosRinkebyTokenJSON.networks[rinkebyNetworkId].transactionHash
+        tokenExtdevAddress = KudosTokenJSON.networks[extdevNetworkId].address
       } else if (contractType === 'token') {
         tokenRinkebyAddress = MyRinkebyTokenJSON.networks[rinkebyNetworkId].address
         rinkebyTxHash = MyRinkebyTokenJSON.networks[rinkebyNetworkId].transactionHash

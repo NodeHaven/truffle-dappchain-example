@@ -2,12 +2,12 @@ pragma solidity ^0.5.0;
 
 import "openzeppelin-solidity/contracts/token/ERC20/ERC20.sol";
 
-contract MyCoin is ERC20 {
+contract KudosToken is ERC20 {
     // Transfer Gateway contract address
     address public gateway;
 
-    string public name = "MyCoin";
-    string public symbol = "MCC";
+    string public name = "KudosToken";
+    string public symbol = "KDST";
     uint8 public decimals = 18;
     
     constructor (address _gateway) public {

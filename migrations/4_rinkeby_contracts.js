@@ -1,5 +1,5 @@
 const MyRinkebyToken = artifacts.require('./MyRinkebyToken.sol')
-const MyRinkebyCoin = artifacts.require('./MyRinkebyCoin.sol')
+const KudosRinkebyToken = artifacts.require('./KudosRinkebyToken.sol')
 
 module.exports = function (deployer, network, accounts) {
   if (network !== 'rinkeby') {
@@ -7,15 +7,15 @@ module.exports = function (deployer, network, accounts) {
   }
 
   deployer.then(async () => {
-    await deployer.deploy(MyRinkebyToken)
-    const myTokenInstance = await MyRinkebyToken.deployed()
+    await deployer.deploy(KudosRinkebyToken)
+    const myTokenInstance = await KudosRinkebyToken.deployed()
 
-    await deployer.deploy(MyRinkebyCoin)
-    const myCoinInstance = await MyRinkebyCoin.deployed()
+    await deployer.deploy(KudosRinkebyToken)
+    const KudosTokenInstance = await KudosRinkebyToken.deployed()
         
     console.log('\n*************************************************************************\n')
-    console.log(`MyRinkebyToken Contract Address: ${myTokenInstance.address}`)
-    console.log(`MyRinkebyCoin Contract Address: ${myCoinInstance.address}`)
+    console.log(`KudosRinkebyToken Contract Address: ${myTokenInstance.address}`)
+    console.log(`KudosRinkebyToken Contract Address: ${KudosTokenInstance.address}`)
     console.log('\n*************************************************************************\n')
   })
 }
