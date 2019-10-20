@@ -7,15 +7,15 @@ module.exports = function (deployer, network, accounts) {
   }
 
   deployer.then(async () => {
-    await deployer.deploy(KudosRinkebyToken)
-    const myTokenInstance = await KudosRinkebyToken.deployed()
+    await deployer.deploy(MyRinkebyToken)
+    const myTokenInstance = await MyRinkebyToken.deployed()
 
     await deployer.deploy(KudosRinkebyToken)
-    const KudosTokenInstance = await KudosRinkebyToken.deployed()
+    const kudosTokenInstance = await KudosRinkebyToken.deployed()
         
     console.log('\n*************************************************************************\n')
-    console.log(`KudosRinkebyToken Contract Address: ${myTokenInstance.address}`)
-    console.log(`KudosRinkebyToken Contract Address: ${KudosTokenInstance.address}`)
+    console.log(`MyRinkebyToken Contract Address: ${myTokenInstance.address}`)
+    console.log(`KudosRinkebyToken Contract Address: ${kudosTokenInstance.address}`)
     console.log('\n*************************************************************************\n')
   })
 }
