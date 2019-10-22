@@ -1,0 +1,94 @@
+Starting migrations...
+======================
+> Network name:    'rinkeby'
+> Network id:      4
+> Block gas limit: 6995925
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > transaction hash:    0xc86e9fa9d8c2a7013daabefa4fca1af2ab4d9cf979e36ec1ebeabd42d6f75c4f
+   > Blocks: 0            Seconds: 4
+   > contract address:    0xfe1A225660A59D45e21965999D75B4DD7d67F367
+   > account:             0x84b93385786a79B6eC1eB63ab6402A7dCa7326F4
+   > balance:             2.995726379999715092
+   > gas used:            284908
+   > gas price:           15.000000001 gwei
+   > value sent:          0 ETH
+   > total cost:          0.004273620000284908 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:     0.004273620000284908 ETH
+
+
+2_simple_store.js
+=================
+
+   > Saving migration to chain.
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+3_token_contracts.js
+====================
+
+   > Saving migration to chain.
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+4_rinkeby_contracts.js
+======================
+
+   Deploying 'MyRinkebyToken'
+   --------------------------
+   > transaction hash:    0x862abf2a8e394b402321988ae2bfe325bb0e57f4c87b7171814b7a8217a14568
+   > Blocks: 1            Seconds: 12
+   > contract address:    0xD4b6fd32Dc461E2C336111B8c50ab0FfE229a423
+   > account:             0x84b93385786a79B6eC1eB63ab6402A7dCa7326F4
+   > balance:             2.95337984999689199
+   > gas used:            2727000
+   > gas price:           15.000000001 gwei
+   > value sent:          0 ETH
+   > total cost:          0.040905000002727 ETH
+
+
+   Deploying 'KudosRinkebyToken'
+   -----------------------------
+   > transaction hash:    0x772581b605836f6039c23e74cb33a9e60efac35a631d06a1587ac07c4a2f4140
+   > Blocks: 0            Seconds: 12
+   > contract address:    0xc6151eEFFD8678Aa957467D2b732Dd794D4b67d0
+   > account:             0x84b93385786a79B6eC1eB63ab6402A7dCa7326F4
+   > balance:             2.933036654995535777
+   > gas used:            1356213
+   > gas price:           15.000000001 gwei
+   > value sent:          0 ETH
+   > total cost:          0.020343195001356213 ETH
+
+
+*************************************************************************
+
+MyRinkebyToken Contract Address: 0xD4b6fd32Dc461E2C336111B8c50ab0FfE229a423
+KudosRinkebyToken Contract Address: 0xc6151eEFFD8678Aa957467D2b732Dd794D4b67d0
+
+*************************************************************************
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:     0.061248195004083213 ETH
+
+
+Summary
+=======
+> Total deployments:   3
+> Final cost:          0.065521815004368121 ETH
+
+Done in 117.25s.

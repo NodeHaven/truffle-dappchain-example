@@ -758,6 +758,16 @@ program
   })
 
 program
+  .command('private64tohex')
+  .description('convert b64 accounts to hex')
+  .action(function (){
+    const privateKeyStr = fs.readFileSync(path.join(__dirname, './extdev_private_key'), 'utf-8')
+    const privateBytes = CryptoUtils.B64ToUint8Array(privateKeyStr)
+    let privateHex = CryptoUtils.bytesToHex(privateBytes)
+    console.log(privateHex)
+  })
+
+program
   .command('eth-balance')
   .description('display the current ETH balance for an account')
   .option('-c, --chain <chain ID>', '"eth" for Rinkeby, "extdev" for PlasmaChain')

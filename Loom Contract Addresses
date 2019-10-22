@@ -1,0 +1,106 @@
+Starting migrations...
+======================
+> Network name:    'extdev_plasma_us1'
+> Network id:      9545242630824
+> Block gas limit: 0
+
+
+1_initial_migration.js
+======================
+
+   Deploying 'Migrations'
+   ----------------------
+   > transaction hash:    0xa33ef55b30987f3ee6e27571a401b0b7f8c4854f03b26165b5054eb65dcadc65
+   > Blocks: 0            Seconds: 0
+   > contract address:    0xc8D4207B597F046C4cDccD110D5001cf53f42ca0
+   > account:             0xBea7C909F30CEC3d000DAA89252D41cA4c28dE84
+   > balance:             0
+   > gas used:            0
+   > gas price:           0 gwei
+   > value sent:          0 ETH
+   > total cost:          0 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+2_simple_store.js
+=================
+
+   Deploying 'SimpleStore'
+   -----------------------
+   > transaction hash:    0xce161d7f00b73e00dc619543dea7b76955edd751bf15479c6c9e0d32c8ef2e8d
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x637D3c6eF35bE154Ee4A3F5bEEB3c3538C257a51
+   > account:             0xBea7C909F30CEC3d000DAA89252D41cA4c28dE84
+   > balance:             0
+   > gas used:            0
+   > gas price:           0 gwei
+   > value sent:          0 ETH
+   > total cost:          0 ETH
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+3_token_contracts.js
+====================
+
+   Deploying 'MyToken'
+   -------------------
+   > transaction hash:    0x07a452069c35eb4416d63a2f77420e587e7c22dd0232b324612b77fe7fc00356
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x2e158dD5A901eF7956F384c9C72a3d36855Ab1BC
+   > account:             0xBea7C909F30CEC3d000DAA89252D41cA4c28dE84
+   > balance:             0
+   > gas used:            0
+   > gas price:           0 gwei
+   > value sent:          0 ETH
+   > total cost:          0 ETH
+
+
+   Deploying 'KudosToken'
+   ----------------------
+   > transaction hash:    0x1e16c1ec444f4a94eebda59c066c859d06b1d5cf61af8bbacde3b9ecb5d470bd
+   > Blocks: 0            Seconds: 0
+   > contract address:    0x48b16fDc7e1e8ac1d9b24baD01284C5F1028e092
+   > account:             0xBea7C909F30CEC3d000DAA89252D41cA4c28dE84
+   > balance:             0
+   > gas used:            0
+   > gas price:           0 gwei
+   > value sent:          0 ETH
+   > total cost:          0 ETH
+
+
+*************************************************************************
+
+KudosToken Contract Address: 0x2e158dD5A901eF7956F384c9C72a3d36855Ab1BC
+KudosCoin Contract Address: 0x48b16fDc7e1e8ac1d9b24baD01284C5F1028e092
+
+*************************************************************************
+
+
+   > Saving migration to chain.
+   > Saving artifacts
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+4_rinkeby_contracts.js
+======================
+
+   > Saving migration to chain.
+   -------------------------------------
+   > Total cost:                   0 ETH
+
+
+Summary
+=======
+> Total deployments:   4
+> Final cost:          0 ETH

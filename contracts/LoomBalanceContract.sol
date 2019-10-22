@@ -16,7 +16,7 @@ contract ERC20Interface {
     event Approval(address indexed tokenOwner, address indexed spender, uint tokens);
 }
 
-contract AccountContract is Ownable {
+contract LoomBalanceContract is Ownable {
   using SafeMath for uint256;
 
   address fundingWalletAddress;
