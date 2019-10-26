@@ -3,10 +3,17 @@ pragma solidity ^0.5.0;
 import "openzeppelin-solidity/contracts/ownership/Ownable.sol";
 
 contract UserContract is Ownable {
-    mapping (address => uint256) listOfGunNicks;//address-> gun-nick hash
+    struct UserStruct {
+        string accountId;
+        string username;
+        string encCryptPrivKey;
+        string encSigPrivKey;
+    }
+    mapping (address => UserStruct[])
+    mapping (address => uint256) listOfUsers; //address-> username hash
     uint256[] listOfGunNicksIndex;
-    mapping (uint256 => string) listOfGunNickHashTranslations;
-    mapping (address => string) listOfGunEncryptedKeys;
+    mapping (uint256 => string) listOfSocialUsernamesHashTranslations;
+    mapping (address => string) listOfSocialEncryptedKeys;
 
 
     event setHavenAccount(address user, string userGunNick);
@@ -16,9 +23,9 @@ contract UserContract is Ownable {
         //check that the user doesnt exist since before
         //search by string hash
         //...
-        if (listOfGunNicks[msg.sender] > 0)
+        if (listOfSocialUsernames[msg.sender] > 5)
         {
-            //we found that the user already has a nick
+            //we found that the user already has over 5
             revert("the user already has a nick");
         }
 

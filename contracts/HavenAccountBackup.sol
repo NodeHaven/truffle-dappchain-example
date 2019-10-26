@@ -10,7 +10,6 @@ contract UserContract is Ownable {
         string encCryptPubKey;
         string encCryptPrivKey;
         string encSignPrivKey;
-        uint listPointer;
     }
     struct pubUserStruct {
         address loomAddr;
@@ -36,11 +35,11 @@ contract UserContract is Ownable {
     }
 
     function newUser(string _naturalRightsId, address _ethAddr, string _userName, string _encCryptPubKey, string _encCryptPrivKey, string _encSignPrivKey) public returns(bool success) {
-        if(isHavenUser(_naturalRightsId)) {
+        if(isHavenUser(_naturalRightsId) {
             if(isLoomUser(msg.sender)) {
                 revert ("User is already registered")
             } else {
-                if(userNameOwner[_userName]) {
+                if(userNameOwner[_userName])) {
                     revert ("Username already taken")
                 } else {
                 userPrivate[msg.sender].naturalRightsId = _naturalRightsId;
@@ -50,7 +49,9 @@ contract UserContract is Ownable {
                 userPrivate[msg.sender].encCryptPrivKey = _encCryptPrivKey;
                 userPrivate[msg.sender].encSignPrivKey = _encSignPrivKey;
                 userPublic[_naturalRightsId].userName = _userName;
+                userPublic[msg.sender].listPointer = userList.push(msg.sender) - 1;
                 userNameOwner[_userName] = msg.sender;
+                
                 }
             }
         entityStructs[entityAddress].listPointer = entityList.push(entityAddress) - 1;
@@ -75,4 +76,6 @@ contract UserContract is Ownable {
         entityList.length--;
         return true;
     }
+    
+    
 }
