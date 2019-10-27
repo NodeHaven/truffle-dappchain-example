@@ -23,12 +23,19 @@ contract UserContract is Ownable {
         string userName;
         uint listPointer;
     }
+    struct userNameTransfer {
+        address initiator
+        string initExpectedUserName
+        uint listPointer
+    }
+
     mapping (address => privUserStruct) userPrivate; // private account backup
     mapping (address => pubUserStruct) userPublic; // naturalRightsID to public identifiers
     address[] public userList; // user index
     mapping (uint256 => address) userNameOwner; // maps username to Loom address
+    mapping (address => userNameTransfer) userNameTransferQueue; // Maps userName transfer from initiator (value) to comfirmer (key)
+    address[] public userNameTransferList; // List of username confirmers
     mapping (uint256 => address) naturalRightsOwner; // maps NR ID to Loom address
-    
     
     // Only contract owner can change Natural Rights Server
     function setNaturalRightsServer(address _newNaturalRights) public onlyOwner {
@@ -101,6 +108,46 @@ contract UserContract is Ownable {
         newUserNameHash = uint256(keccak256(newUserName));
         userNameOwner[newUserNameHash] = msg.sender;
         userPublic[msg.sender].userName = newUserName;
+    }
+
+    function initTransferUsername(address confirmAddr, string expectedUserName) {
+        if(!isLoomUser(msg.sender)) {
+            revert('Initiating User does not exist');
+        }
+        if(!isLoomUser(confirmAddr)) {
+            revert('Confirming User does not exist');
+        }
+        if(userPublic[confirmAddr].userName == expectedUserName) {
+            userNameTransferQueue[confirmAddr].initiator = msg.sender;
+            userNameTransferQueue[confirmAddr].listPointer = userNameTransferList.push(confirmAddr) - 1;
+        }        
+    }
+
+    function confirmTransferUsername(string expectedUserName) {
+        address initiator = userNameTransferQueue[msg.sender].initiator;
+        if(!isLoomUser(initiator)) {
+            revert('Initiating User does not exist');
+        }
+        if(!isLoomUser(msg.sender)) {
+            revert('Confirming User does not exist');
+        }
+        if(userPublic[initiator].userName == expectedUserName) {
+            if(userNameTransferQueue[msg.sender].initExpectedUserName == userPublic[msg.sender].userName) {
+                expectedUserNameHash = uint256(keccak256(expectedUserName));
+                confirmUserNameHash = uint256(keccak256(userPublic[msg.sender].userName));
+                userNameOwner[expectedUserNameHash] = initiator;
+                userNameOwner[confirmUserNameHash] = msg.sender;
+                userPublic[initiator].userName = userPublic.[msg.sender].userName;
+                userPublic[msg.sender].userName = expectedUserName;
+                // Remove the userName transfer queue and row in list
+                delete naturalRightsTransferQueue[msg.sender];
+                uint rowToDelete = userNameTransferList[msg.sender].listPointer;
+                address keyToMove = userNameTransferList[userNameTransferList.length-1];
+                userNameTransferList[rowToDelete] = keyToMove;
+                userNameTransferQueue[keyToMove].listPointer = rowToDelete;
+                userNameTransferList.length--;
+            }
+        }
     }
 
     function deleteEntity(address entityAddress) public returns(bool success) {
