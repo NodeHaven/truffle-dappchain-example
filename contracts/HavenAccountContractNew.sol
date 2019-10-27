@@ -19,20 +19,27 @@ contract UserContract is Ownable {
         string encSignPrivKey;
     }
     struct pubUserStruct {
-        address naturalRightsId;
+        string naturalRightsId;
         string userName;
         uint listPointer;
     }
     mapping (address => privUserStruct) userPrivate; // private account backup
     mapping (address => pubUserStruct) userPublic; // naturalRightsID to public identifiers
-    address[] public userList;
+    address[] public userList; // user index
     mapping (uint256 => address) userNameOwner; // maps username to Loom address
     mapping (uint256 => address) naturalRightsOwner; // maps NR ID to Loom address
     
     
+    // Only contract owner can change Natural Rights Server
     function setNaturalRightsServer(address _newNaturalRights) public onlyOwner {
         require(_naturalRights != address(0));
         naturalRightsAddress = _newNaturalRights;
+    }
+    
+    // Natural Rights server only adds users
+    function addUser(string _naturalRightsId, address _loomAddr) public onlyNR returns(bool success) {
+        naturalRightsIdHash = uint256(keccak256(_naturalRightsId));
+        naturalRightsOwner[naturalRightsIdHash] = _loomAddr;
     }
     
     function isLoomUser(address _loomAddr) public view returns(bool isIndeed) {
@@ -49,12 +56,7 @@ contract UserContract is Ownable {
         return userList.length;
     }
     
-    function newUser(string _naturalRightsId, address _loomAddr) public onlyNR returns(bool success) {
-        naturalRightsIdHash = uint256(keccak256(_naturalRightsId));
-        naturalRightsOwner[naturalRightsIdHash] = _loomAddr;
-    }
-
-    function initUser(string _naturalRightsId, address _ethAddr, string _userName, string _encCryptPubKey, string _encCryptPrivKey, string _encSignPrivKey) public returns(bool success) {
+    function initUser(string _naturalRightsId, string _userName, string _encCryptPubKey, string _encCryptPrivKey, string _encSignPrivKey) public returns(bool success) {
         if(isHavenUser(_naturalRightsId) {
             if(isLoomUser(msg.sender)) {
                 revert ("User is already registered")
@@ -62,28 +64,43 @@ contract UserContract is Ownable {
                 if(userNameOwner[_userName])) {
                     revert ("Username already taken")
                 } else {
-                userPrivate[msg.sender].naturalRightsId = _naturalRightsId;
-                userPrivate[msg.sender].ethAddr = _ethAddr;
-                userPrivate[msg.sender].userName = _userName;
                 userPrivate[msg.sender].encCryptPubKey = _encCryptPubKey;
                 userPrivate[msg.sender].encCryptPrivKey = _encCryptPrivKey;
                 userPrivate[msg.sender].encSignPrivKey = _encSignPrivKey;
-                userPublic[_naturalRightsId].userName = _userName;
+                userPublic[msg.sender].userName = _userName;
+                userPublic[msg.sender].naturalRightsId = _naturalRightsId
                 userPublic[msg.sender].listPointer = userList.push(msg.sender) - 1;
                 userNameOwner[_userName] = msg.sender;
+                
                 }
             }
-        entityStructs[entityAddress].listPointer = entityList.push(entityAddress) - 1;
+        userPublic[msg.sender].listPointer = userList.push(msg.sender) - 1;
         return true;
         } else {
             revert("Natural Rights account does not exist")
         }
     }
 
-    function updateEntity(address entityAddress, uint entityData) public returns(bool success) {
-        if(!isEntity(entityAddress)) throw;
-        entityStructs[entityAddress].entityData = entityData;
+    function updateUserPriv(string _encCryptPubKey, string _encCryptPrivKey, string _encSignPrivKey) public returns(bool success) {
+        if(!isLoomUser(msg.sender)) throw;
+        userPrivate[msg.sender].encCryptPubKey = _encCryptPubKey;
+        userPrivate[msg.sender].encCryptPrivKey = _encCryptPrivKey;
+        userPrivate[msg.sender].encSignPrivKey = _encSignPrivKey;
         return true;
+    }
+    
+    function updateUserName(string newUserName) public returns(bool success) {
+        if(!isLoomUser(msg.sender)) {
+            revert('User does not exist')
+        }
+        if(userNameOwner[_userName])) {
+            revert ("Username already taken")
+        } else {
+        oldUserNameHash = uint256(keccak256(userPublic[msg.sender].userName));
+        delete userNameOwner[oldUserNameHash];
+        newUserNameHash = uint256(keccak256(newUserName));
+        userNameOwner[newUserNameHash] = msg.sender;
+        userPublic[msg.sender].userName = newUserName;
     }
 
     function deleteEntity(address entityAddress) public returns(bool success) {
