@@ -38,9 +38,10 @@ contract UserContract is Ownable {
     mapping (uint256 => address) naturalRightsOwner; // maps NR ID to Loom address
     
     // Only contract owner can change Natural Rights Server
-    function setNaturalRightsServer(address _newNaturalRights) public onlyOwner {
+    function setNaturalRightsServer(address _newNaturalRights) public onlyOwner returns(bool success) {
         require(_naturalRights != address(0));
         naturalRightsAddress = _newNaturalRights;
+        return true;
     }
     
     // Natural Rights server only adds users
@@ -78,18 +79,18 @@ contract UserContract is Ownable {
                 userPublic[msg.sender].naturalRightsId = _naturalRightsId
                 userPublic[msg.sender].listPointer = userList.push(msg.sender) - 1;
                 userNameOwner[_userName] = msg.sender;
-                
                 }
             }
-        userPublic[msg.sender].listPointer = userList.push(msg.sender) - 1;
-        return true;
         } else {
             revert("Natural Rights account does not exist")
         }
+        return true;
     }
 
     function updateUserPriv(string _encCryptPubKey, string _encCryptPrivKey, string _encSignPrivKey) public returns(bool success) {
-        if(!isLoomUser(msg.sender)) throw;
+        if(!isLoomUser(msg.sender)) {
+            revert('User does not exist');
+        }
         userPrivate[msg.sender].encCryptPubKey = _encCryptPubKey;
         userPrivate[msg.sender].encCryptPrivKey = _encCryptPrivKey;
         userPrivate[msg.sender].encSignPrivKey = _encSignPrivKey;
@@ -108,9 +109,10 @@ contract UserContract is Ownable {
         newUserNameHash = uint256(keccak256(newUserName));
         userNameOwner[newUserNameHash] = msg.sender;
         userPublic[msg.sender].userName = newUserName;
+        return true
     }
 
-    function initTransferUsername(address confirmAddr, string expectedUserName) {
+    function initTransferUsername(address confirmAddr, string expectedUserName) public returns (bool success) {
         if(!isLoomUser(msg.sender)) {
             revert('Initiating User does not exist');
         }
@@ -120,10 +122,11 @@ contract UserContract is Ownable {
         if(userPublic[confirmAddr].userName == expectedUserName) {
             userNameTransferQueue[confirmAddr].initiator = msg.sender;
             userNameTransferQueue[confirmAddr].listPointer = userNameTransferList.push(confirmAddr) - 1;
-        }        
+        }
+        return true;
     }
 
-    function confirmTransferUsername(string expectedUserName) {
+    function confirmTransferUsername(string expectedUserName) public returns(bool success) {
         address initiator = userNameTransferQueue[msg.sender].initiator;
         if(!isLoomUser(initiator)) {
             revert('Initiating User does not exist');
@@ -150,13 +153,19 @@ contract UserContract is Ownable {
         }
     }
 
-    function deleteEntity(address entityAddress) public returns(bool success) {
-        if(!isEntity(entityAddress)) throw;
-        uint rowToDelete = entityStructs[entityAddress].listPointer;
-        address keyToMove   = entityList[entityList.length-1];
-        entityList[rowToDelete] = keyToMove;
-        entityStructs[keyToMove].listPointer = rowToDelete;
-        entityList.length--;
+    // deletes the user from the userList and also deletes the userName. userPriv and NR account mapping left for recovery
+    function deleteUser() public returns(bool success) {
+        if(!isLoomUser(msg.sender)) {
+            revert('User does not exist');
+        }
+        uint rowToDelete = userPublic[msg.sender].listPointer;
+        address keyToMove = userList[userList.length-1];
+        userList[rowToDelete] = keyToMove;
+        userPublic[keyToMove].listPointer = rowToDelete;
+        userList.length--;
+        uint256 userNameHash = uint256(keccak256(userPublic[msg.sender].userName))
+        delete userNameOwner[userNameHash]
+        delete userPublic[msg.sender].userName 
         return true;
     }
 }
