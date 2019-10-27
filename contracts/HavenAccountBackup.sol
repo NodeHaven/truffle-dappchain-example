@@ -21,16 +21,16 @@ contract UserContract is Ownable {
     address[] public userList;
     mapping (string => address) userNameOwner; // maps username to address
     
-    function isLoomUser(address _loomAddr) public constant returns(bool isIndeed) {
+    function isLoomUser(address _loomAddr) public view returns(bool isIndeed) {
         if(userList.length == 0) return false;
         return (userList[privUserStructs[_loomAddr].listPointer] == _loomAddr);
     }
     
-    function isHavenUser(address _naturalRightsId) public constant returns(bool isIndeed) {
+    function isHavenUser(address _naturalRightsId) public view returns(bool isIndeed) {
         return (pubUserStructs[_naturalRightsId].loomAddr > 0);
     }
 
-    function getUserCount() public constant returns(uint userCount) {
+    function getUserCount() public view returns(uint userCount) {
         return userList.length;
     }
 
