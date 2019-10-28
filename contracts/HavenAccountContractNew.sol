@@ -32,38 +32,48 @@ contract UserContract is Ownable {
     mapping (address => privUserStruct) userPrivate; // private account backup
     mapping (address => pubUserStruct) userPublic; // naturalRightsID to public identifiers
     address[] public userList; // user index
-    mapping (uint256 => address) userNameOwner; // maps username to Loom address
-    mapping (address => userNameTransfer) userNameTransferQueue; // Maps userName transfer from initiator (value) to comfirmer (key)
+    mapping (uint256 => address) userNameOwner; // maps userName to Loom address
+    mapping (address => userNameTransfer) userNameTransferQueue; // Queues userName transfer from initiator (value) to comfirmer (key)
     address[] public userNameTransferList; // List of username confirmers
     mapping (uint256 => address) naturalRightsOwner; // maps NR ID to Loom address
     
-    // Only contract owner can change Natural Rights Server
+    // Only contract owner may change Natural Rights Server
     function setNaturalRightsServer(address _newNaturalRights) public onlyOwner returns(bool success) {
         require(_naturalRights != address(0));
         naturalRightsAddress = _newNaturalRights;
         return true;
     }
     
-    // Natural Rights server only adds users
+    // Only Natural Rights server may add users
     function addUser(string _naturalRightsId, address _loomAddr) public onlyNR returns(bool success) {
         naturalRightsIdHash = uint256(keccak256(_naturalRightsId));
         naturalRightsOwner[naturalRightsIdHash] = _loomAddr;
     }
     
+    // Is user active
     function isLoomUser(address _loomAddr) public view returns(bool isIndeed) {
         if(userList.length == 0) return false;
         return (userList[userPublic[_loomAddr].listPointer] == _loomAddr);
     }
     
+    // Is user added by NR
     function isHavenUser(address _naturalRightsId) public view returns(bool isIndeed) {
         naturalRightsIdHash = uint256(keccak256(_naturalRightsId));
         return (naturalRightsOwner[naturalRightsIdHash] > 0);
     }
 
+    // Number of active users
     function getUserCount() public view returns(uint userCount) {
         return userList.length;
     }
     
+    function setUserName(string _userName) private {
+        userNameHash = uint256(keccak256(_userName));
+        userNameOwner[newUserNameHash] = msg.sender;
+        userPublic[msg.sender].userName = _userName;
+    }
+
+    // user initializes the public and private users structs to become active
     function initUser(string _naturalRightsId, string _userName, string _encCryptPubKey, string _encCryptPrivKey, string _encSignPrivKey) public returns(bool success) {
         if(isHavenUser(_naturalRightsId) {
             if(isLoomUser(msg.sender)) {
@@ -75,10 +85,9 @@ contract UserContract is Ownable {
                 userPrivate[msg.sender].encCryptPubKey = _encCryptPubKey;
                 userPrivate[msg.sender].encCryptPrivKey = _encCryptPrivKey;
                 userPrivate[msg.sender].encSignPrivKey = _encSignPrivKey;
-                userPublic[msg.sender].userName = _userName;
                 userPublic[msg.sender].naturalRightsId = _naturalRightsId
                 userPublic[msg.sender].listPointer = userList.push(msg.sender) - 1;
-                userNameOwner[_userName] = msg.sender;
+                setUserName(_userName);
                 }
             }
         } else {
@@ -106,9 +115,7 @@ contract UserContract is Ownable {
         } else {
         oldUserNameHash = uint256(keccak256(userPublic[msg.sender].userName));
         delete userNameOwner[oldUserNameHash];
-        newUserNameHash = uint256(keccak256(newUserName));
-        userNameOwner[newUserNameHash] = msg.sender;
-        userPublic[msg.sender].userName = newUserName;
+        setUserName(newUserName);
         return true
     }
 
@@ -167,5 +174,30 @@ contract UserContract is Ownable {
         delete userNameOwner[userNameHash]
         delete userPublic[msg.sender].userName 
         return true;
+    }
+
+    // Used to recover the natural rights encrypted private keys
+    function recoverUserPriv() public returns(userPriv) {
+        if(!isLoomUser(msg.sender)) {
+            revert('User does not exist')
+        }
+        return userPriv[msg.sender]
+    }
+
+    // Used to recover the user public identifiers
+    function recoverUserPub() public returns(userPub) {
+        if(!isLoomUser(msg.sender)) {
+            revert('User does not exist')
+        }
+        return userPub[msg.sender]
+    }
+    
+    // Reactivate previously deleted user
+    function restoreUser(string userName) return(bool success) {
+        if(isLoomUser(msg.sender)) {
+            revert('User exists')
+        }
+        setUserName(userName);
+        userPublic[msg.sender].listPointer = userList.push(msg.sender) - 1;
     }
 }
