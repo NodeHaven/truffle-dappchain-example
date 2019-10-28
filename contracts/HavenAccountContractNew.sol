@@ -27,6 +27,7 @@ contract UserContract is Ownable {
         address initiator
         string initExpectedUserName
         uint listPointer
+        // bool paymentMade
     }
 
     mapping (address => privUserStruct) userPrivate; // private account backup
@@ -105,7 +106,7 @@ contract UserContract is Ownable {
         userPrivate[msg.sender].encSignPrivKey = _encSignPrivKey;
         return true;
     }
-    
+
     function updateUserName(string newUserName) public returns(bool success) {
         if(!isLoomUser(msg.sender)) {
             revert('User does not exist')
