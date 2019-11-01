@@ -49,6 +49,7 @@ contract UserContract is Ownable {
     function addUser(string memory _naturalRightsId, address _loomAddr) public onlyNR returns(bool success) {
         uint256 naturalRightsIdHash = uint256(keccak256(bytes(_naturalRightsId)));
         naturalRightsOwner[naturalRightsIdHash] = _loomAddr;
+        return true;
     }
     
     // Is user active
@@ -69,7 +70,7 @@ contract UserContract is Ownable {
     }
     
     function setUserName(string memory _userName) private {
-        uint256 userNameHash = uint256(keccak256(_userName));
+        uint256 userNameHash = uint256(keccak256(bytes(_userName)));
         userNameOwner[userNameHash] = msg.sender;
         userPub[msg.sender].userName = _userName;
     }
@@ -80,8 +81,8 @@ contract UserContract is Ownable {
             if(isLoomUser(msg.sender)) {
                 revert ("User is already registered");
             } else {
-                uint256 userNameHash = uint256(keccak256(_userName));
-                if(userNameOwner[userNameHash]) {
+                uint256 userNameHash = uint256(keccak256(bytes(_userName)));
+                if(userNameOwner[userNameHash] != address(0)) {
                     revert ("Username already taken");
                 } else {
                 userPriv[msg.sender].cryptPubKey = _cryptPubKey;
@@ -112,11 +113,11 @@ contract UserContract is Ownable {
         if(!isLoomUser(msg.sender)) {
             revert('User does not exist');
         }
-        uint256 userNameHash = uint256(keccak256(_newUserName));
-        if(userNameOwner[userNameHash]) {
+        uint256 userNameHash = uint256(keccak256(bytes(_newUserName)));
+        if(userNameOwner[userNameHash] != address(0)) {
             revert ("Username already taken");
         } else {
-        uint256 oldUserNameHash = uint256(keccak256(userPub[msg.sender].userName));
+        uint256 oldUserNameHash = uint256(keccak256(bytes(userPub[msg.sender].userName)));
         delete userNameOwner[oldUserNameHash];
         setUserName(_newUserName);
         return true;
@@ -130,7 +131,7 @@ contract UserContract is Ownable {
         if(!isLoomUser(confirmAddr)) {
             revert('Confirming User does not exist');
         }
-        if(userPub[confirmAddr].userName == expectedUserName) {
+        if(keccak256(bytes(userPub[confirmAddr].userName)) == keccak256(bytes(expectedUserName))) {
             userNameTransferQueue[confirmAddr].initiator = msg.sender;
             userNameTransferQueue[confirmAddr].listPointer = userNameTransferList.push(confirmAddr) - 1;
         }
@@ -145,22 +146,27 @@ contract UserContract is Ownable {
         if(!isLoomUser(msg.sender)) {
             revert('Confirming User does not exist');
         }
-        if(userPub[initiator].userName == expectedUserName) {
-            if(userNameTransferQueue[msg.sender].initExpectedUserName == userPub[msg.sender].userName) {
-                uint256 expectedUserNameHash = uint256(keccak256(expectedUserName));
-                uint256 confirmUserNameHash = uint256(keccak256(userPub[msg.sender].userName));
+        if(keccak256(bytes(userPub[initiator].userName)) == keccak256(bytes(expectedUserName))) {
+            if(keccak256(bytes(userNameTransferQueue[msg.sender].initExpectedUserName)) == keccak256(bytes(userPub[msg.sender].userName))) {
+                uint256 expectedUserNameHash = uint256(keccak256(bytes(expectedUserName)));
+                uint256 confirmUserNameHash = uint256(keccak256(bytes(userPub[msg.sender].userName)));
                 userNameOwner[expectedUserNameHash] = initiator;
                 userNameOwner[confirmUserNameHash] = msg.sender;
                 userPub[initiator].userName = userPub[msg.sender].userName;
                 userPub[msg.sender].userName = expectedUserName;
                 // Remove the userName transfer queue and row in list
                 delete userNameTransferQueue[msg.sender];
-                uint rowToDelete = userNameTransferList[msg.sender].listPointer;
+                uint rowToDelete = userNameTransferQueue[msg.sender].listPointer;
                 address keyToMove = userNameTransferList[userNameTransferList.length-1];
                 userNameTransferList[rowToDelete] = keyToMove;
                 userNameTransferQueue[keyToMove].listPointer = rowToDelete;
                 userNameTransferList.length--;
+                return true;
+            } else {
+                revert('Username mismatch: confirmer userName does not match initiators expected userName');
             }
+        } else {
+            revert('Username mismatch: confirmer expectedUserName does not match initiator userName ');
         }
     }
 
@@ -174,26 +180,31 @@ contract UserContract is Ownable {
         userList[rowToDelete] = keyToMove;
         userPub[keyToMove].listPointer = rowToDelete;
         userList.length--;
-        uint256 userNameHash = uint256(keccak256(userPub[msg.sender].userName));
+        uint256 userNameHash = uint256(keccak256(bytes(userPub[msg.sender].userName)));
         delete userNameOwner[userNameHash];
         delete userPub[msg.sender].userName; 
         return true;
     }
 
     // Used to recover the natural rights encrypted private keys
-    function recoverUserPriv() public returns(string memory, string memory, string memory) {
+    function recoverUserPriv() public view returns(string memory, string memory, string memory) {
         if(!isLoomUser(msg.sender)) {
             revert('User does not exist');
         }
-        return (userPriv[msg.sender].cryptPubKey, userPriv[msg.sender].encCryptPrivKey, userPriv[msg.sender].encSignPrivKey);
+        string memory cryptPubKey = userPriv[msg.sender].cryptPubKey;
+        string memory encCryptPrivKey = userPriv[msg.sender].encCryptPrivKey;
+        string memory encSignPrivKey = userPriv[msg.sender].encSignPrivKey;
+        return (cryptPubKey, encCryptPrivKey, encSignPrivKey);
     }
 
     // Used to recover the user public identifiers
-    function recoverUserPub() public returns(string memory, string memory, string memory) {
+    function recoverUserPub() public view returns(string memory, string memory) {
         if(!isLoomUser(msg.sender)) {
             revert('User does not exist');
         }
-        return (userPub[msg.sender].naturalRightsId, userPub[msg.sender].userName, userPub[msg.sender].listPointer);
+        string memory naturalRightsId =  userPub[msg.sender].naturalRightsId;
+        string memory userName = userPub[msg.sender].userName;
+        return (naturalRightsId, userName);
     }
     
     // Reactivate previously deleted user
@@ -203,5 +214,6 @@ contract UserContract is Ownable {
         }
         setUserName(userName);
         userPub[msg.sender].listPointer = userList.push(msg.sender) - 1;
+        return true;
     }
 }
