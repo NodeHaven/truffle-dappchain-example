@@ -2,7 +2,7 @@ pragma solidity ^0.5.12;
 
 import "openzeppelin-solidity/ownership/Ownable.sol";
 
-contract UserContract is Ownable {
+contract HavenAccountContract is Ownable {
 
     // The address of the Natural Rights Server Testing
     address public naturalRightsAddress;
@@ -75,8 +75,24 @@ contract UserContract is Ownable {
         userPub[msg.sender].userName = _userName;
     }
 
-    // user initializes the public and private users structs to become active
-    function initUser(string memory _naturalRightsId, string memory _userName, string memory _cryptPubKey, string memory _encCryptPrivKey, string memory _encSignPrivKey) public returns(bool success) {
+    // user initializes the private users structs to become active
+    function initUserPriv(string memory _naturalRightsId, string memory _cryptPubKey, string memory _encCryptPrivKey, string memory _encSignPrivKey) public returns(bool success) {
+        if(isHavenUser(_naturalRightsId)) {
+            if(isLoomUser(msg.sender)) {
+                userPriv[msg.sender].cryptPubKey = _cryptPubKey;
+                userPriv[msg.sender].encCryptPrivKey = _encCryptPrivKey;
+                userPriv[msg.sender].encSignPrivKey = _encSignPrivKey;
+            } else {
+                revert ("Loom account is not registered");
+            }
+        } else {
+            revert("Natural Rights account does not exist");
+        }
+        return true;
+    }
+
+    // user initializes the public users structs to become active
+    function initUserPub(string memory _naturalRightsId, string memory _userName) public returns(bool success) {
         if(isHavenUser(_naturalRightsId)) {
             if(isLoomUser(msg.sender)) {
                 revert ("User is already registered");
@@ -85,9 +101,6 @@ contract UserContract is Ownable {
                 if(userNameOwner[userNameHash] != address(0)) {
                     revert ("Username already taken");
                 } else {
-                userPriv[msg.sender].cryptPubKey = _cryptPubKey;
-                userPriv[msg.sender].encCryptPrivKey = _encCryptPrivKey;
-                userPriv[msg.sender].encSignPrivKey = _encSignPrivKey;
                 userPub[msg.sender].naturalRightsId = _naturalRightsId;
                 userPub[msg.sender].listPointer = userList.push(msg.sender) - 1;
                 setUserName(_userName);
